@@ -31607,11 +31607,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7380041443585945365, guid: e2aa94d0918034bae919cda9c454feec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.6538582
+      value: -3.6680107
       objectReference: {fileID: 0}
     - target: {fileID: 7380041443585945365, guid: e2aa94d0918034bae919cda9c454feec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.47329
+      value: -1.47328
       objectReference: {fileID: 0}
     - target: {fileID: 7380041443585945578, guid: e2aa94d0918034bae919cda9c454feec, type: 3}
       propertyPath: orthographic size
