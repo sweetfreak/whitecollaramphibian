@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2940021297643013267
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 76.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.61
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820116, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: enemyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820141, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_Name
+      value: BlueBingo (Enemy) Variant (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039824326367930, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_Size.y
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039824326367930, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.3105991
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
