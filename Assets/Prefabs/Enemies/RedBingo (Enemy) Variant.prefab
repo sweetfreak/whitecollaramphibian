@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 149949513, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: powerUpType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820113, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_BodyType
       value: 1
@@ -17,11 +21,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 43.56
+      value: 28.09
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.55
+      value: 6.14
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -61,7 +65,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820141, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_Name
-      value: RedBingo (Enemy)
+      value: RedBingo (Enemy) Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}

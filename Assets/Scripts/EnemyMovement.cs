@@ -1,56 +1,171 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public enum EnemyType
+public enum EnemyModeType
 {
-    BlueDoubleJump,
-    RedZipDash,
-    YellowHoverGlide,
-    Normal
+    Idle,
+    Moving,
+    Chasing,
+    Nothing
 }
+
 public class EnemyMovement : MonoBehaviour
 {
-    private Rigidbody2D enemyRigidbody;
-    
+    [Header("Components")]
+    [SerializeField] private Rigidbody2D enemyRigidbody;
     [SerializeField] private Animator enemyAnimator;
+    [SerializeField] private BoxCollider2D enemyCollider2D;
+    
+    
+    
+    [Header("Movement")]
     public float thawTime;
     private SpriteRenderer enemySpriteRenderer;
     private float enemyFreezeSpeed = 0;
     public bool enemyIsFrozen = false;
-    
-    
-    
-    //might have the baddies be wide, so easier to jump on them
-    //[SerializeField] private float enemyScale = 1f;
-    
+    private float enemySpeed = 1f;
+    public bool moving;
     [SerializeField] float enemyMoveSpeed = 1f;
-    public  EnemyType enemyType = new EnemyType();
+    
+    public bool chase;
+    [SerializeField] private float enemyChasingSpeed = 3f;
+    public EnemyModeType currentMoveType;
+    private EnemyModeType previousModeType = EnemyModeType.Nothing;
+    
+    [Header("PowerUp Stuff")]
+    private PowerUpType thisPowerUp;
+    private PowerUpActivator powerUpActivator;
+
+
+    [Header("Enemy Edge Collision")]
+    [SerializeField] float colliderDetectDistance = .5f;
+    [SerializeField] private Vector3 collisionDetectionOffset;
+    [SerializeField] private Vector3 cliffDetectionOffset;
+    private Vector2 collisionDirection = Vector2.right;
+    [SerializeField] private bool groundDetected;
+    [SerializeField] private bool collisionDetected;
+    [SerializeField] private LayerMask edgeLayer;
+    
 
     void Start()
     {
+        
         enemyRigidbody = GetComponent<Rigidbody2D>();
         enemyAnimator = GetComponent<Animator>();
         enemySpriteRenderer = GetComponent<SpriteRenderer>();
-        GetEnemyType();
-
+        powerUpActivator = GetComponentInChildren<PowerUpActivator>();
+        enemyCollider2D = GetComponent<BoxCollider2D>();
+        thisPowerUp = powerUpActivator.powerUpType;
+        GetEnemyType(thisPowerUp);
+        ChangeEnemyMode(currentMoveType);
+        //BELOW: trying to make it so they go in the direction they're facing from the start...
+        //but right now, their ground detection doesn't move with them.
+        //enemySpeed *= gameObject.transform.localScale.x;
     }
 
     void Update()
     {
-        enemyRigidbody.velocity = new Vector2(enemyMoveSpeed, 0);
+        CheckForEdges();
+        if (currentMoveType != EnemyModeType.Idle)
+        {
+           MoveEnemy(); 
+        }
+        
+    }
+
+    void ChangeEnemyMode(EnemyModeType thisType)
+    {
+        // if (thisType == previousModeType)
+        // {
+        //     return;
+        // }
+        // previousModeType = thisType;
+        
+        switch (thisType)
+        {
+            case EnemyModeType.Idle:
+                IdleEnemy();
+                break;
+            case EnemyModeType.Moving:
+                MovingEnemy();
+                break;
+            case EnemyModeType.Chasing:
+                ChasingEnemy();
+                break;
+            default:
+                break;
+        }
     }
     
 
-     void OnTriggerExit2D(Collider2D other)
+    void IdleEnemy()
     {
-        if (other.tag != "Player" )
+        enemyAnimator.SetBool("moving", false);
+
+        enemyRigidbody.bodyType = RigidbodyType2D.Static;
+    }
+    void MovingEnemy()
+    {
+        enemyAnimator.SetBool("chasing", false);
+        enemyAnimator.SetBool("moving", true);
+        enemySpeed = enemyMoveSpeed;
+        enemyRigidbody.bodyType = RigidbodyType2D.Kinematic;
+        // enemyRigidbody.velocity = new Vector2(enemySpeed, 0);
+    }
+
+    void ChasingEnemy()
+    {
+        enemyAnimator.SetBool("chasing", true);
+        enemySpeed = enemyChasingSpeed;
+        enemyRigidbody.bodyType = RigidbodyType2D.Kinematic;
+        // enemyRigidbody.velocity = new Vector2(enemySpeed, 0);
+    }
+
+    void MoveEnemy()
+    {
+        // if (enemyRigidbody.bodyType != RigidbodyType2D.Static)
+        // {
+            enemyRigidbody.velocity = new Vector2(enemySpeed, 0);
+        // }
+
+    }
+
+    void CheckForEdges()
+    {
+        
+        collisionDetected = Physics2D.Raycast(transform.position + collisionDetectionOffset, collisionDirection, colliderDetectDistance, edgeLayer);
+        groundDetected =  Physics2D.Raycast(transform.position + cliffDetectionOffset, Vector2.down, colliderDetectDistance, edgeLayer);
+
+        if ((collisionDetected || !groundDetected))
         {
-            enemyMoveSpeed = -enemyMoveSpeed;
-            //Debug.Log("changing directions because bumped into " + other.tag);
+            // if (!chase)
+            // {
+            enemySpeed = -enemySpeed;
+            
+            collisionDirection *= new Vector2(-1, 0);
+            cliffDetectionOffset *= new Vector2(-1, 1);
             FlipEnemyFacing();
+            // }
+            // else if (chase)
+            //         {
+            //             Debug.Log("enemy could fall off edge?");
+            //         }
         }
+        
+    }
+    private void OnDrawGizmos()
+    {
+        // Gizmos.color = Color.red;
+        // Gizmos.DrawLine(transform.position + collisionDetectionOffset, transform.position + collisionDetectionOffset + Vector3.right * colliderDetectDistance);
+        Debug.DrawRay(transform.position + collisionDetectionOffset, collisionDirection, Color.red);
+        
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position + cliffDetectionOffset, transform.position + cliffDetectionOffset + Vector3.down * colliderDetectDistance);
+
+        // Debug.DrawRay(transform.position + cliffDetectionOffset, Vector2.down, Color.blue);
+        
     }
 
      public void Freeze()
@@ -60,25 +175,35 @@ public class EnemyMovement : MonoBehaviour
          StartCoroutine(ThawTimeCoroutine());
      }
 
-     IEnumerator ThawTimeCoroutine()
+     public IEnumerator ThawTimeCoroutine()
      {
          enemyAnimator.enabled = false;
+         //enemyCollider2D.enabled = false;
+         gameObject.layer = LayerMask.NameToLayer("Frozen");
          enemyRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
          enemySpriteRenderer.material.color = Color.grey;
          yield return new WaitForSecondsRealtime(thawTime);
          enemyAnimator.enabled = true;
+         //enemyCollider2D.enabled = true;
+         gameObject.layer = LayerMask.NameToLayer("Enemies");
          enemyIsFrozen = false;
-         GetEnemyType();
+         GetEnemyType(thisPowerUp);
          enemyRigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
      }
      
     void FlipEnemyFacing()
     {
-        // Debug.Log("Flipped");
-        transform.localScale = new Vector2((-1 * Mathf.Sign(-enemyRigidbody.velocity.x)), 1f);
+        if (Mathf.Sign(enemyRigidbody.velocity.x) > 0)
+        {
+            transform.localScale = new Vector2(1, 1);
+        }
+        else if (Mathf.Sign(enemyRigidbody.velocity.x) < 0)
+        {
+            transform.localScale = new Vector2(-1, 1);
+        }
     }
     
-    IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds) {
+    public IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds) {
         Vector3 originalSize = transform.localScale;
         Vector3 newSize = new Vector3(xSqueeze * Mathf.Sign(originalSize.x), ySqueeze, originalSize.z);
         float t = 0f;
@@ -94,23 +219,22 @@ public class EnemyMovement : MonoBehaviour
             yield return null;
         }
 
-        enemyMoveSpeed = -enemyMoveSpeed;
     }
 
-    public void GetEnemyType()
+    public void GetEnemyType(PowerUpType powerUp)
     {
-        switch (enemyType)
+        switch (powerUp)
         {
-            case EnemyType.BlueDoubleJump:
+            case PowerUpType.BlueDoubleJump:
                 enemySpriteRenderer.material.color = Color.cyan;
                 break;
-            case EnemyType.RedZipDash:
+            case PowerUpType.RedZipDash:
                 enemySpriteRenderer.material.color = Color.red;
                 break;
-            case EnemyType.YellowHoverGlide:
+            case PowerUpType.YellowHoverGlide:
                 enemySpriteRenderer.material.color = Color.yellow;
                 break;
-            case EnemyType.Normal:
+            case PowerUpType.Normal:
                 enemySpriteRenderer.material.color = Color.white;
                 break;
             default:

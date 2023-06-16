@@ -27,19 +27,21 @@ public class LevelExit : MonoBehaviour
        
         
         //FOR REGULAR GAME 
-        // int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        // int nextSceneIndex = currentSceneIndex + 1;
-        // if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
-        // {
-        //     nextSceneIndex = 0;
-        // }
-        // //need to reset scene persists before a new level
-        // FindObjectOfType<ScenePersist>().ResetScenePersist();
-        // SceneManager.LoadScene(nextSceneIndex);
-        
-        //FOR DEMO
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            GameSession gameSession = FindObjectOfType<GameSession>();
+            gameSession.notMainMenu = false;
+            nextSceneIndex = 0;
+        }
+        //need to reset scene persists before a new level
         FindObjectOfType<ScenePersist>().ResetScenePersist();
-        FindObjectOfType<GameSession>().ResetGameSession();
+        SceneManager.LoadSceneAsync(nextSceneIndex);
+        
+        // //FOR DEMO
+        // FindObjectOfType<ScenePersist>().ResetScenePersist();
+        // FindObjectOfType<GameSession>().ResetGameSession();
 
     }
 }

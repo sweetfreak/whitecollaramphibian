@@ -7,17 +7,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 149949513, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: powerUpType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 76.02
+      value: 19.4
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.61
+      value: 2.11
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820115, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -55,17 +59,37 @@ PrefabInstance:
       propertyPath: enemyType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820116, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: edgeLayer.m_Bits
+      value: 4160
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820116, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: cliffDetectionOffset.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820116, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: cliffDetectionOffset.y
+      value: -0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820116, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: collisionDetectionOffset.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820117, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820141, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_Name
-      value: BlueBingo (Enemy) Variant (3)
+      value: BlueBingo (Enemy) Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1633039824326367930, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_Size.y
-      value: 0.04
+      value: 0.16754222
       objectReference: {fileID: 0}
     - target: {fileID: 1633039824326367930, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: m_Offset.y
-      value: 0.3105991
+      value: 0.26122892
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}

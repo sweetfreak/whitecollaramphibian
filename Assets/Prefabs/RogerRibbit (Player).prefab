@@ -13,9 +13,12 @@ GameObject:
   - component: {fileID: 7013101273579747074}
   - component: {fileID: 189633997}
   - component: {fileID: 189633996}
-  - component: {fileID: 829317336}
   - component: {fileID: 829317337}
   - component: {fileID: 990141313}
+  - component: {fileID: 990141314}
+  - component: {fileID: 829317336}
+  - component: {fileID: 990141315}
+  - component: {fileID: 990141316}
   m_Layer: 7
   m_Name: RogerRibbit (Player)
   m_TagString: Player
@@ -127,8 +130,8 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_Material: {fileID: 6200000, guid: f8760b241d76e485d8004e3130c52492, type: 2}
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -141,36 +144,13 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 7013101273579747075}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: f8760b241d76e485d8004e3130c52492, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.022345543, y: -0.028249323}
-  m_Size: {x: 0.6693249, y: 0.7613822}
+  m_Offset: {x: 0.014245033, y: -0.028249323}
+  m_Size: {x: 0.6855259, y: 0.7613822}
   m_Direction: 0
---- !u!114 &829317336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7013101273579747075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 385637ae65da34973ad07a62ff289da7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runSpeed: 2
-  maxSpeed: 7
-  linearDrag: 4
-  jumpSpeed: 11
-  jumpDelay: 0.25
-  playerGravity: 1
-  fallMultiplier: 5
-  waterGravity: 0.5
-  canDoPowerUp: 0
-  powerUpTimeDelay: 3
-  zipSpeed: 10000
 --- !u!114 &829317337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,29 +181,99 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!61 &990141313
-BoxCollider2D:
+--- !u!114 &990141313
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7013101273579747075}
   m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: f8760b241d76e485d8004e3130c52492, type: 2}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.04277134, y: -0.4069085}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.71875, y: 0.8125}
-    newSize: {x: 0.71875, y: 0.8125}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.5926838, y: 0.03951168}
-  m_EdgeRadius: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 585704b9158e94955b5c661ab6fd12d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathSound: {fileID: 8300000, guid: c3653af668fdc48c09353cbc95e029ec, type: 3}
+  SFXVolume: 0.5
+  playerIsAlive: 1
+--- !u!114 &990141314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7013101273579747075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a941103a540b64e9594ea4b40fb72b0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isOnGround: 0
+  collisionLayer:
+    serializedVersion: 2
+    m_Bits: 4672
+  groundLengthGizmo: 0.45
+  colliderOffset: {x: 0.3, y: 0, z: 0}
+--- !u!114 &829317336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7013101273579747075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 385637ae65da34973ad07a62ff289da7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isOnGround: 0
+  bounceableLayer:
+    serializedVersion: 2
+    m_Bits: 4096
+  runSpeed: 12
+  maxSpeed: 7
+  runningLinearDrag: 22
+  waterLinearDrag: 2
+  bounceSFX: {fileID: 8300000, guid: 545d61268c35547539e062f7fbcf8ed3, type: 3}
+  SFXVolume: 0.5
+--- !u!114 &990141315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7013101273579747075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceae00211d115489f9644436a7707f8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterGO: {fileID: 7013101273579747075}
+  maxYVelocity: 25
+  groundJumpSpeed: 11
+  jumpDelay: 0.25
+  playerGravity: 3.5
+  fallMultiplier: 2.5
+  jumpSFX: {fileID: 8300000, guid: 009eea9d44903471bbb04a95ffede33b, type: 3}
+  waterJumpSpeed: 7
+  waterGravity: 1.5
+--- !u!114 &990141316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7013101273579747075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5143e0fe856545e3935907e5035a4ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canDoPowerUp: 0
+  powerUpTimeDelay: 3
+  powerUpString: 
+  zipSpeed: 10000
+  doubleJumpSpeed: 12
+  dblJumpSound: {fileID: 0}
+  zipDashSound: {fileID: 0}
+  coroutinesHappening: 0

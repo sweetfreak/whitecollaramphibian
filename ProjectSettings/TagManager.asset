@@ -6,7 +6,8 @@ TagManager:
   tags:
   - Background
   - Enemy
-  - EnemyTop
+  - Activator
+  - FrozenEnemy
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Hazards
   - Interactables
   - Bounceable
-  - 
+  - Frozen
   - 
   - 
   - 
