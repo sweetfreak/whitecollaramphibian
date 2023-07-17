@@ -56,6 +56,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1633039822730820116, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
+      propertyPath: thawTime
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633039822730820116, guid: 483706a635f0e4a15a2478ef34c206f0, type: 3}
       propertyPath: enemyType
       value: 0
       objectReference: {fileID: 0}

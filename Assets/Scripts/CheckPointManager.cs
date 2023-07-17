@@ -16,6 +16,8 @@ public class CheckPointManager : MonoBehaviour
     [SerializeField] public GameObject startPoint;
     [SerializeField] public GameObject checkPoint;
     public Vector3 currentSpawnPoint = new Vector3();
+
+    [SerializeField] private GameObject playerGO;
     // public Vector3 startSpawnPoint = new Vector3();
     // public Vector3 checkPointSpawnPoint = new Vector3();
 
@@ -44,7 +46,12 @@ public class CheckPointManager : MonoBehaviour
     //     playerManager.checkpoint
     //
     // }
-    
+
+    private void OnEnable()
+    {
+        Instantiate(playerGO);
+    }
+
 
     public void CheckpointReached()
     {

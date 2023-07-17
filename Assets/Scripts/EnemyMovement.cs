@@ -16,7 +16,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Rigidbody2D enemyRigidbody;
     [SerializeField] private Animator enemyAnimator;
-    [SerializeField] private BoxCollider2D enemyCollider2D;
+    //[SerializeField] private BoxCollider2D enemyCollider2D;
     
     
     
@@ -37,6 +37,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("PowerUp Stuff")]
     private PowerUpType thisPowerUp;
     private PowerUpActivator powerUpActivator;
+    private bool hasPowerUpType = false;
 
 
     [Header("Enemy Edge Collision")]
@@ -56,7 +57,7 @@ public class EnemyMovement : MonoBehaviour
         enemyAnimator = GetComponent<Animator>();
         enemySpriteRenderer = GetComponent<SpriteRenderer>();
         powerUpActivator = GetComponentInChildren<PowerUpActivator>();
-        enemyCollider2D = GetComponent<BoxCollider2D>();
+        //enemyCollider2D = GetComponent<BoxCollider2D>();
         thisPowerUp = powerUpActivator.powerUpType;
         GetEnemyType(thisPowerUp);
         ChangeEnemyMode(currentMoveType);
@@ -72,6 +73,11 @@ public class EnemyMovement : MonoBehaviour
         {
            MoveEnemy(); 
         }
+        // if (thisPowerUp != PowerUpType.Normal && !enemyIsFrozen)
+        // {
+        //     GetEnemyType(thisPowerUp);
+        // }
+
         
     }
 
@@ -86,6 +92,7 @@ public class EnemyMovement : MonoBehaviour
         switch (thisType)
         {
             case EnemyModeType.Idle:
+                
                 IdleEnemy();
                 break;
             case EnemyModeType.Moving:
@@ -96,7 +103,9 @@ public class EnemyMovement : MonoBehaviour
                 break;
             default:
                 break;
+            
         }
+        
     }
     
 
@@ -187,6 +196,7 @@ public class EnemyMovement : MonoBehaviour
          //enemyCollider2D.enabled = true;
          gameObject.layer = LayerMask.NameToLayer("Enemies");
          enemyIsFrozen = false;
+         enemySpriteRenderer.material.color = Color.white;
          GetEnemyType(thisPowerUp);
          enemyRigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
      }
@@ -221,25 +231,26 @@ public class EnemyMovement : MonoBehaviour
 
     }
 
-    public void GetEnemyType(PowerUpType powerUp)
+    private void GetEnemyType(PowerUpType powerUp)
     {
         switch (powerUp)
         {
             case PowerUpType.BlueDoubleJump:
                 enemySpriteRenderer.material.color = Color.cyan;
                 break;
-            case PowerUpType.RedZipDash:
-                enemySpriteRenderer.material.color = Color.red;
+            case PowerUpType.YellowZipDash:
+                enemySpriteRenderer.material.color = new Color(1f, .35f, 0f, 1);
                 break;
-            case PowerUpType.YellowHoverGlide:
-                enemySpriteRenderer.material.color = Color.yellow;
-                break;
+            // case PowerUpType.MagentaHoverGlide:
+            //     enemySpriteRenderer.material.color = Color.magenta;
+            //     break;
             case PowerUpType.Normal:
                 enemySpriteRenderer.material.color = Color.white;
                 break;
             default:
                 break;
         }
+        Debug.Log(gameObject + " is " + powerUp);
     }
     
 }

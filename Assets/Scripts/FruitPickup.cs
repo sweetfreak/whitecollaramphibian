@@ -5,16 +5,16 @@ using UnityEngine;
 
 public class FruitPickup : MonoBehaviour
 {
+    // private AudioSource audiosource;
     [SerializeField] private AudioClip gulpSound;
     [SerializeField] private float gulpVolume = .5f;
     //[SerializeField] private int fruitsEaten;
 
     private bool wasCollected = false;
 
-    // void FixedUpdate()
+    // private void Start()
     // {
-    //     Physics2D.Raycast(transform.position, Vector2.down, .1f);
-    //
+    //     audiosource = GetComponent<AudioSource>();
     // }
 
     private void OnTriggerEnter2D(Collider2D col)
@@ -25,6 +25,7 @@ public class FruitPickup : MonoBehaviour
             wasCollected = true;
             FindObjectOfType<GameSession>().AddFruits();
             //Sound Effect from pixabay.com/
+            // audiosource.PlayOneShot(gulpSound, gulpVolume); 
             AudioSource.PlayClipAtPoint(gulpSound, Camera.main.transform.position, gulpVolume);
             Destroy(gameObject);
             

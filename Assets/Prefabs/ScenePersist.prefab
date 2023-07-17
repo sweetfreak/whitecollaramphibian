@@ -49,8 +49,8 @@ MonoBehaviour:
   spawnAtCheckpoint: 0
   startPoint: {fileID: 1673524524}
   checkPoint: {fileID: 1557365619}
-  startSpawnPoint: {x: 0, y: 0, z: 0}
-  checkPointSpawnPoint: {x: 0, y: 0, z: 0}
+  currentSpawnPoint: {x: 0, y: 0, z: 0}
+  playerGO: {fileID: 7013101273579747075, guid: 457ad1e6be06046d4ada38e4e5cc7aa3, type: 3}
   checkPointAnimator: {fileID: 1557365621}
 --- !u!1 &1557365619
 GameObject:
@@ -221,6 +221,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   checkpointNotReached: 1
+  checkpointSfx: {fileID: 8300000, guid: 513931ec0322d4dc2aa21e1db88cf2a8, type: 3}
+  checkpointSfxVol: 1
 --- !u!1 &1673524524
 GameObject:
   m_ObjectHideFlags: 0

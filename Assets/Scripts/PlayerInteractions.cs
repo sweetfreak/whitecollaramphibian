@@ -8,26 +8,42 @@ public class PlayerInteractions : MonoBehaviour
      [Header("Components")]
         private Rigidbody2D myRb2d;
         private Animator myAnimator;
-        //private CapsuleCollider2D myBodyCollider2D;
         private SpriteRenderer mySpriteRenderer;
-        //private PlayerJump playerJump;
         private PlayerManager playerManager;
+        private PlayerMovement playerMovement;
+        private PlayerJump playerJump;
         
     [Header("PowerUps")] 
     public bool canDoPowerUp = false;
     [SerializeField] private float powerUpTimeDelay = 3f;
     public string powerUpString;
 
-    [SerializeField] private float zipSpeed = 1000f;
-    [SerializeField] private float doubleJumpSpeed = 12f;
+
+    //[SerializeField] private float doubleJumpSpeed = 12f;
+    public bool canDoubleJump;
+    //private PlayerMovement playerMovement;
+
+    [Header("Dashing")]
+    //private bool canDash = false;
+    [SerializeField]
+    private float maxXVelocity = 70f;
+    public bool isDashing;
+    [SerializeField] private float zipSpeed = 100f;
+    private float dashTime = 0.2f;
+    private float dashingCooldown = 1f;
+    [SerializeField] private TrailRenderer trailRenderer;
     
     [Header("Other")]
     //public bool playerIsAlive = true;
     [SerializeField] private AudioClip dblJumpSound;
+    [SerializeField] private AudioClip powerUpEarnSFX;
+    // [SerializeField] private float powerupEarnVol = 1f;
     [SerializeField] private AudioClip zipDashSound;
     private PowerUpActivator thisActivator;
-    private float sFXVolume;
-
+    [SerializeField] private float dashVolume = .5f;
+    //bool boosting = false;
+    //[SerializeField] private float boostNum = 10f;
+    
     //public bool testCoroutineHappening;
     public float coroutinesHappening = 0f;
 
@@ -38,29 +54,51 @@ public class PlayerInteractions : MonoBehaviour
         myAnimator = GetComponent<Animator>();
         mySpriteRenderer = GetComponent<SpriteRenderer>();
         playerManager = GetComponent<PlayerManager>();
-        sFXVolume = playerManager.SFXVolume;
+        playerMovement = GetComponent<PlayerMovement>();
+        trailRenderer = FindObjectOfType<TrailRenderer>();
+        //playerMovement = FindObjectOfType<PlayerMovement>();
         //thisActivator = GetComponent<PowerUpActivator>();
+        playerJump = FindObjectOfType<PlayerJump>();
 
     }
+
+    void Update()
+    {
+        // if (Mathf.Abs(myRb2d.velocity.x) > maxXVelocity)
+        // {
+        //         
+        //     myRb2d.velocity = new Vector2(Mathf.Sign(myRb2d.velocity.x) * maxXVelocity, myRb2d.velocity.y);
+        // }
+
+        if (isDashing)
+        {
+            Debug.Log("player X velocity during dash is: " + myRb2d.velocity.x);
+        }
+        
+    }
     
-    void OnPowerUp(InputValue value)
+    
+    public void OnPowerUp(InputAction.CallbackContext context)
     {
         if (!playerManager.playerIsAlive) { return; }
         
-        if (value.isPressed && canDoPowerUp)
+       
+        if (context.started && canDoPowerUp)
         {
+           // bool skipReset = false;
+            
             switch (powerUpString)
             {
                 case "BlueDoubleJump":
-                    myAnimator.SetBool("dblJumpReady", true);
-                    // playerJump.DoAJump();
-                    // myAnimator.SetBool("dblJumpReady", false);
-                    DoubleJump();
-                    break;
-                case "RedZipDash":
+                    //playerJump.DoAJump(playerJump.dblJumpSFX, playerJump.doubleJumpSpeed);
+                playerJump.DoubleJump();
+                canDoubleJump = false;
+                //skipReset = true;
+                break;
+                case "YellowZipDash":
                     DoADash();
                     break;
-                case "YellowHoverGlide":
+                case "MagentaHoverGlide":
                     //DoHoverGlide();
                     break;
                 case "Normal":
@@ -69,36 +107,48 @@ public class PlayerInteractions : MonoBehaviour
                     Debug.Log("no powerup detected");
                     break;
             }
-            //StopCoroutine(PowerUpTimerCoroutine());
-            //Debug.Log("powerup Performed");
+           
             
-            mySpriteRenderer.material.color = Color.white;
-            powerUpString = "";
-            canDoPowerUp = false;
+            //since Jump button is used for power up, need to skip this.
+            // if (!skipReset)
+            // { 
+                ResetPowerUp();
+                
+            // }
+            // skipReset = false;
             
-            //myAnimator.SetBool("dblJumpReady", false);
+
         }
     }
-    
-    
-//COLLISION STUFF    
+
+    public void ResetPowerUp()
+    {
+        mySpriteRenderer.material.color = Color.white;
+        powerUpString = "";
+        canDoPowerUp = false;
+        canDoubleJump = false;
+    }
+
+
+    //COLLISION STUFF    
     private void OnCollisionEnter2D(Collision2D col)
     {
         //Debug.Log(col.gameObject.tag + " collided with player");
         //if collision is an enemy
         if (col.gameObject.CompareTag("Enemy") )
         {
-            Debug.Log("player Interations script: Collided with enemy tag");
             //get enemyMovement script
             thisActivator = col.gameObject.GetComponentInChildren<PowerUpActivator>();
             
             if (thisActivator.bounceOn)   // (powerUpString == ""  && thisActivator.bounceOn)
             {
-                thisActivator.TempDeactivate();
+                
                 Debug.Log("deactivated activator (attempt)");
                 //update the player's enemyTypeString to the enemy's 
                 powerUpString = thisActivator.powerUpType.ToString();
                 InitiatePowerUp(powerUpString);
+                
+                //thisActivator.TempDeactivate();
             }
         }
     }
@@ -107,17 +157,34 @@ public class PlayerInteractions : MonoBehaviour
     {
         canDoPowerUp = true;
         StartCoroutine(PowerUpTimerCoroutine());
+        AudioSource.PlayClipAtPoint(powerUpEarnSFX, Camera.main.transform.position, dashVolume);
+        ParticleSystem particle;
         switch (type)
         {
             case "BlueDoubleJump":
                 mySpriteRenderer.material.color = Color.blue;
+                canDoubleJump = true;
+                
+                
+                particle = mySpriteRenderer.GetComponentInChildren<ParticleSystem>();
+                particle.startColor = Color.blue;
+                particle.Play();
+                
+                //AudioSource.PlayClipAtPoint(powerUpEarnSFX, Camera.main.transform.position, dashVolume);
+
                 break;
-            case "RedZipDash":
-                mySpriteRenderer.material.color = Color.red;
+            case "YellowZipDash":
+                mySpriteRenderer.material.color = new Color(1f, .35f, 0f, 1);
+                particle = mySpriteRenderer.GetComponentInChildren<ParticleSystem>();
+                particle.startColor = new Color(1f, .35f, 0f, 1);
+                particle.Play();
+
+
                 break;
-            case "YellowHoverGlide":
-                mySpriteRenderer.material.color = Color.yellow;
-                break;
+            // case "MagentaHoverGlide":
+            //     mySpriteRenderer.material.color = Color.magenta;
+            //     //AudioSource.PlayClipAtPoint(powerUpEarnSFX, Camera.main.transform.position, dashVolume);
+            //     break;
             case "Normal":
                 canDoPowerUp = false;
                 //StopCoroutine(PowerUpTimerCoroutine());
@@ -140,6 +207,8 @@ public class PlayerInteractions : MonoBehaviour
             mySpriteRenderer.material.color = Color.white;
                     powerUpString = "";
                     canDoPowerUp = false;
+                    canDoubleJump = false;
+                    //playerMovement.canDoubleJump;
         }
 
         coroutinesHappening--;
@@ -150,25 +219,44 @@ public class PlayerInteractions : MonoBehaviour
 
     private void DoADash()
     {
-         myRb2d.gravityScale = 0;
-         myRb2d.drag = 0;
-         
-         myRb2d.velocity = new Vector2(0, myRb2d.velocity.y);
-         
-         // FireRay();
-         
-         //Ray ray = new Ray(transform.position, transform.forward);
-         // RaycastHit hitData;
-         //RaycastHit2D hitData = Physics2D.Raycast(transform.position, transform.forward, .5f);
-         
-         myRb2d.AddForce(new Vector2(transform.localScale.x * zipSpeed, 0)); //, ForceMode2D.Force);
-
-         //Physics2D.Raycast(transform.position + new Vector3(.5f, 0), Vector2.down, 1f); 
+        AudioSource.PlayClipAtPoint(zipDashSound, Camera.main.transform.position, dashVolume);
+        StartCoroutine(DashCoroutine());
         
-         
-         AudioSource.PlayClipAtPoint(zipDashSound, Camera.main.transform.position, sFXVolume);
+        //float momentumIncreaser = 0;
+        //while the boostNumber is more than 0, add Xforce to the rigidbody.
+        //     myRb2d.gravityScale = 0;
+        //     myRb2d.drag = 0;
+        //     myRb2d.velocity = new Vector2(0, myRb2d.velocity.y);
+        //     
+        //     myRb2d.AddForce(new Vector2(transform.localScale.x * zipSpeed, 0), ForceMode2D.Force);
+        //
+        // }
+        
+    }
 
-
+    private IEnumerator DashCoroutine()
+    {
+        
+        
+        //THE DASH IS TOO FAST/TOO MUCH IN THE AIR!!!!!
+        
+        
+        //canDash = false;
+        isDashing = true;
+        //float originalGravity = myRb2d.gravityScale;
+        //myRb2d.gravityScale = 0;
+        myRb2d.drag = playerMovement.runningLinearDrag;
+        myRb2d.velocity = new Vector2(0, myRb2d.velocity.y);
+        myRb2d.velocity = new Vector2(transform.localScale.x * zipSpeed, 0);
+        trailRenderer.emitting = true;
+        yield return new WaitForSeconds(dashTime);
+        trailRenderer.emitting = false;
+        //myRb2d.gravityScale = originalGravity;
+        isDashing = false;
+        myRb2d.velocity = new Vector2(playerMovement.moveInput.x * playerMovement.airSpeed, myRb2d.velocity.y);
+        myRb2d.drag = 0;
+        // yield return new WaitForSeconds(dashingCooldown);
+        // canDash = true;
     }
     
     // void FireRay()
@@ -179,19 +267,21 @@ public class PlayerInteractions : MonoBehaviour
     //
     // }
 
-    private void DoubleJump()
-    {
-
-        myRb2d.drag = 0;
-        AudioSource.PlayClipAtPoint(dblJumpSound, Camera.main.transform.position, sFXVolume);
-        // myRb2d.velocity = new Vector2(myRb2d.velocity.x, 0);
-        // myRb2d.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
-        myRb2d.velocity = new Vector2(myRb2d.velocity.x, doubleJumpSpeed);
-        
-
-
-        //jumpTimer = 0;
-        //AudioSource.PlayClipAtPoint(dblJumpSound, Camera.main.transform.position, sFXVolume);
-    }
+    // private void DoubleJump()
+    // {
+    //
+    //     // canDoubleJump = true;
+    //
+    //     myRb2d.drag = 0;
+    //     AudioSource.PlayClipAtPoint(dblJumpSound, Camera.main.transform.position, sFXVolume);
+    //     // myRb2d.velocity = new Vector2(myRb2d.velocity.x, 0);
+    //     // myRb2d.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
+    //     myRb2d.velocity = new Vector2(myRb2d.velocity.x, doubleJumpSpeed);
+    //     
+    //
+    //
+    //     //jumpTimer = 0;
+    //     //AudioSource.PlayClipAtPoint(dblJumpSound, Camera.main.transform.position, sFXVolume);
+    // }
     
 }

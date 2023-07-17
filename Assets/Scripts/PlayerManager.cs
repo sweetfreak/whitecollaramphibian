@@ -12,19 +12,20 @@ public class PlayerManager : MonoBehaviour
     [Header("Components")]
     // private Rigidbody2D myRb2d;
     private Animator myAnimator;
-    private CapsuleCollider2D myBodyCollider2D;
+    private BoxCollider2D myBodyCollider2D;
     private SpriteRenderer mySpriteRenderer;
     private GameObject playerGameObject;
     private CheckPointManager checkPointManager;
+    private Rigidbody2D myrb2d;
 
-    private bool gameHasStarted = false;
+    private bool lifeHasStarted = false;
     //private Vector3 playerSpawnPoint  
         
     
     
     [Header("Other")]
     [SerializeField] private AudioClip deathSound;
-    public float SFXVolume;
+    public float deathVolume = .5f;
     public bool playerIsAlive = true;
 
     private GameSession gameSession;
@@ -43,9 +44,10 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
-        myBodyCollider2D = GetComponent<CapsuleCollider2D>();
+        myBodyCollider2D = GetComponent<BoxCollider2D>();
         myAnimator = GetComponent<Animator>();
         mySpriteRenderer = GetComponent<SpriteRenderer>();
+        myrb2d = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -55,22 +57,26 @@ public class PlayerManager : MonoBehaviour
     }
     void LateUpdate()
     {
-        if (!gameHasStarted)
+        if (!lifeHasStarted)
         { 
             checkPointManager = FindObjectOfType<CheckPointManager>();
             UpdateSpawnPoint(checkPointManager.currentSpawnPoint);
-            gameHasStarted = true;
+            lifeHasStarted = true;
         }
     }
 
-    void OnPause(InputValue value)
+    public void OnPause(InputAction.CallbackContext context)
     {
         //if (!playerIsAlive){return;}
         Debug.Log("Pause pressed");
 
-        if (gameSession != null)
+        // if (gameSession != null)
+        // {
+        //     gameSession.pausePressed = context.performed;
+        // }
+        if (context.performed)
         {
-            gameSession.pausePressed = value.isPressed;
+            gameSession.pausePressed = !gameSession.pausePressed;
         }
     }
     
@@ -96,10 +102,11 @@ public class PlayerManager : MonoBehaviour
 
     IEnumerator DeathProcess()
     {
+        myrb2d.constraints = RigidbodyConstraints2D.FreezeAll;
         float alphaVal = mySpriteRenderer.color.a;
         Color tmp = Color.white;
         //GetComponent<AudioManager>().StopMusic();
-        AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position, SFXVolume);
+        AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position, deathVolume);
 
         while (mySpriteRenderer.color.a > 0)
         {

@@ -8,6 +8,8 @@ public class CheckPointCollider : MonoBehaviour
 {
     private CheckPointManager checkPointManager;
     [SerializeField] bool checkpointNotReached = true;
+    [SerializeField] private AudioClip checkpointSfx;
+    [SerializeField] private float checkpointSfxVol = 1f;
     private void Start()
     {
         checkPointManager = FindObjectOfType<CheckPointManager>();
@@ -19,6 +21,8 @@ public class CheckPointCollider : MonoBehaviour
         if (col.gameObject.CompareTag("Player") && checkpointNotReached)
         {
             //Debug.Log("PLAYER reached checkpoint");
+            AudioSource.PlayClipAtPoint(checkpointSfx, Camera.main.transform.position,checkpointSfxVol);
+
             checkpointNotReached = false;
             checkPointManager.CheckpointReached();
         }

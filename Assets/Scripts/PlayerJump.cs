@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class PlayerJump : MonoBehaviour
 {
@@ -16,26 +17,38 @@ public class PlayerJump : MonoBehaviour
         [Header("Collision")]
         private bool isOnGround = false;
 
+        [Header("InputActions")] private bool desiredJump;
+        private bool pressingJump;
+
         [Header("JumpingFalling")]
     private float jumpSpeed;
 
     [SerializeField] private float maxYVelocity = 10f;
-    [SerializeField] private float groundJumpSpeed = 13f;
+    [SerializeField] private float normalJumpSpeed = 13f;
     [SerializeField] private float jumpDelay = 0.25f;
     private float jumpTimer;
-    [SerializeField] private float playerGravity = 8f;
+
+    [SerializeField] private float playerGravity;
+    [SerializeField] private float regularGravity = 8f;
     [SerializeField] float fallMultiplier = 5f;
     [SerializeField] private AudioClip jumpSFX;
-    private float sFXVolume;
+    [SerializeField] private float jumpVolume = .5f;
+    public bool canDoubleJump;
+    public float doubleJumpSpeed;
+    public AudioClip dblJumpSFX;
 
     [Header("Water Physics")] 
-    private bool isWet = false;
+    [SerializeField] private AudioClip waterJumpSFX;
+    [SerializeField] private bool isInWater = false;
     [SerializeField] private float waterJumpSpeed = 5f;
     [SerializeField] private float waterGravity = 1f;
 
 
     [Header("Other")]
     private bool isAlive = true;
+
+    private PlayerInteractions playerInteractions;
+    
 
 
 
@@ -45,50 +58,200 @@ public class PlayerJump : MonoBehaviour
         myAnimator = GetComponent<Animator>();
         myBodyCollider2D = GetComponent<CapsuleCollider2D>();
         playerManager = GetComponent<PlayerManager>();
-        sFXVolume = playerManager.SFXVolume;
-        waterGravity = playerGravity/2;
+        playerInteractions = GetComponent<PlayerInteractions>();
+        waterGravity = regularGravity/2;
+    }
+    
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        //IF NOT ALIVE, RETURN
+        if (!isAlive)
+        {
+            
+            return;
+        }
+
+        //IF INPUT SYSTEM JUMP BUTTON IS PRESSED, ADD FORCE TO PLAYER
+        if (context.started)
+        {
+            desiredJump = true;
+            pressingJump = true;
+            // Debug.Log("context started");
+            //for jump delay (see fixed update to call DoAJump() )
+            // Debug.Log("Setting jumptimer: " + jumpTimer);
+            jumpTimer = Time.fixedTime + jumpDelay;
+        }
+
+        if (context.canceled)
+        {
+            pressingJump = false;
+            //desiredJump = true; //this is redundant
+            // Debug.Log("context cancelled");
+        }
+        
+        //ADDED THIS CHUNK
+        //for jump delay (see fixed update to call DoAJump() )
+        // Debug.Log("Setting jumptimer: " + jumpTimer);
+        // jumpTimer = Time.fixedTime + jumpDelay;
+        
+        
+        ChooseJump();
     }
 
     private void FixedUpdate()
     {
         isAlive = playerManager.playerIsAlive;
         if (!isAlive){return;}
-        
-        //gets isOnGround from other script
-        isOnGround = GetComponent<CheckOnGround>().isOnGround;
 
-        ModifyJumpPhysics();
-        
-        //if player is on ground, or recently hit the jump button, DO A JUMP
-        if (jumpTimer > Time.fixedTime && isOnGround)
+        if (!playerInteractions.isDashing)
         {
-            DoAJump(); 
+           myRb2d.gravityScale = playerGravity;
+           
+                   
+                   //gets isOnGround from other script
+                   isOnGround = GetComponent<CheckOnGround>().isOnGround;
+                   isInWater = GetComponent<CheckOnGround>().isWet;
+                   canDoubleJump = playerInteractions.canDoubleJump;
+                   ModifyJumpPhysics();
+                   
+
+                   //if player is on ground and recently hit the jump button, DO A JUMP
+                   if ((jumpTimer > Time.fixedTime) && isOnGround)
+                   {
+                       // Debug.Log("jumptimer: " + jumpTimer);
+                       // Debug.Log("time.fixedtime: " + Time.fixedTime);
+                       // Debug.Log("jumpTimer was less than time.fixedtime");
+                       DoAJump(jumpSFX, normalJumpSpeed); 
+                   }  
         }
+        
     }
 
+    // public void OnJump(InputAction.CallbackContext context)
+    // {
+    //     //IF NOT ALIVE, RETURN
+    //     if (!isAlive)
+    //     {
+    //         
+    //         return;
+    //     }
+    //
+    //     //IF INPUT SYSTEM JUMP BUTTON IS PRESSED, ADD FORCE TO PLAYER
+    //     if (context.started)
+    //     {
+    //         desiredJump = true;
+    //         pressingJump = true;
+    //        // Debug.Log("context started");
+    //     }
+    //
+    //     if (context.canceled)
+    //     {
+    //         pressingJump = false;
+    //         desiredJump = true;
+    //         // Debug.Log("context cancelled");
+    //     }
+    //     
+    //     ChooseJump();
+    // }
 
-    void OnJump(InputValue value)
+    //new version!!
+    public void ChooseJump()
     {
-        //IF NOT ALIVE, RETURN
-        if (!isAlive){return;}
         
-        //IF INPUT SYSTEM JUMP BUTTON IS PRESSED, ADD FORCE TO PLAYER
-        if (value.isPressed)
-        { 
-            //for jump delay (see fixed update to call DoAJump() )
-            jumpTimer = Time.time + jumpDelay;
-            
+        
+        //added pressing jump for all this jump stuff
+        if (!isOnGround && playerInteractions.canDoubleJump && pressingJump)
+        {
+            DoubleJump();
         }
+        else if (isInWater)// && desiredJump)
+        {
+            // CHANGE 
+            //TO
+            //WATER OR
+            //SWIMMING
+            //SFX
+            DoAJump(waterJumpSFX, waterJumpSpeed);
+        }
+        // else if (desiredJump && isOnGround)
+        // {
+        //     //added above desiredJump for input actions
+        //
+        //     
+        // }
     }
     
-    public void DoAJump()
-    { 
-        myRb2d.drag = 0;
-        // myRb2d.velocity = new Vector2(myRb2d.velocity.x, 0);
-        // myRb2d.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
+    //  public void ChooseJump()
+    // {
+    //     //added pressing jump for all this jump stuff
+    //     if (!isOnGround && playerInteractions.canDoubleJump && pressingJump)
+    //     {
+    //         DoubleJump();
+    //     }
+    //     else if (isInWater && desiredJump)
+    //     {
+    //         // CHANGE 
+    //         //TO
+    //         //WATER OR
+    //         //SWIMMING
+    //         //SFX
+    //         DoAJump(waterJumpSFX, waterJumpSpeed);
+    //     }
+    //     else if (desiredJump && isOnGround)
+    //     {
+    //         //added above desiredJump for input actions
+    //
+    //         //for jump delay (see fixed update to call DoAJump() )
+    //         Debug.Log("Setting jumptimer: " + jumpTimer);
+    //         jumpTimer = Time.fixedTime + jumpDelay;
+    //     }
+    // }
+
+
+    // void OnJump(InputValue value)
+    // {
+    //     //IF NOT ALIVE, RETURN
+    //     if (!isAlive){return;}
+    //     
+    //     //IF INPUT SYSTEM JUMP BUTTON IS PRESSED, ADD FORCE TO PLAYER
+    //     if (value.isPressed)
+    //     {
+    //         if (!isOnGround && canDoubleJump)
+    //         { 
+    //             myAnimator.SetBool("dblJumpReady", true);
+    //             DoAJump(dblJumpSFX);
+    //             Debug.Log("double jump!");
+    //             playerInteractions.ResetPowerUp();
+    //             canDoubleJump = false;
+    //         }
+    //         else if (isWet)
+    //         {
+    //             // CHANGE 
+    //             //TO
+    //             //WATER OR
+    //             //SWIMMING
+    //             //SFX
+    //             DoAJump(waterJumpSFX);
+    //         } else
+    //         {
+    //           //for jump delay (see fixed update to call DoAJump() )
+    //           jumpTimer = Time.time + jumpDelay;  
+    //         }
+    //         
+    //     }
+    // }
+    
+    public void DoAJump(AudioClip jumpSound, float jumpSpeed)
+    {
+        if (!isInWater)
+        {
+            myRb2d.drag = 0;
+        }
+       
         myRb2d.velocity = new Vector2(myRb2d.velocity.x, jumpSpeed);
+        
         jumpTimer = 0;
-        AudioSource.PlayClipAtPoint(jumpSFX, Camera.main.transform.position, sFXVolume);
+        AudioSource.PlayClipAtPoint(jumpSound, Camera.main.transform.position, jumpVolume);
         StartCoroutine(JumpSqueeze(0.5f, 1.2f, 0.1f));
 
     }
@@ -109,60 +272,69 @@ public class PlayerJump : MonoBehaviour
             yield return null;
         }
     }
-    
-    
+
+    public void DoubleJump()
+    {
+        myAnimator.SetBool("dblJumpReady", true);
+        DoAJump(dblJumpSFX, doubleJumpSpeed);
+        Debug.Log("double jump!");
+        playerInteractions.ResetPowerUp();
+        canDoubleJump = false;
+    }
+
     void ModifyJumpPhysics()
     {
-        //check if in water first
-        if (myBodyCollider2D.IsTouchingLayers(LayerMask.GetMask("Water")))
-        {
-            isWet = true;
-            jumpSpeed = waterJumpSpeed;
-        } else {
-            isWet = false;
-            jumpSpeed = groundJumpSpeed;
-        }
+        
 
-        if (isWet)
+        if (isInWater)
         {
-            myRb2d.gravityScale = waterGravity;
+            playerGravity = waterGravity;
+            //Debug.Log("frog in water");
             return;
         }
+        //Debug.Log("Is not in water");
+        //jumpSpeed = groundJumpSpeed;
+        //Debug.Log("frog out of water");
         
         if (isOnGround)
         {
-            myRb2d.gravityScale = 0;
+            //added desired jump for input actions
+            desiredJump = false;
+            playerGravity = 0;
             myAnimator.SetBool("dblJumpReady", false);
         }
-        else
+        else 
         {
-            float playerVerticalSpeed = Mathf.Sign(myRb2d.velocity.y);
+            float playerVerticalDirection = Mathf.Sign(myRb2d.velocity.y);
+            
             if (Mathf.Abs(myRb2d.velocity.y) > maxYVelocity)
             {
+                
                 myRb2d.velocity = new Vector2(myRb2d.velocity.x, Mathf.Sign(myRb2d.velocity.y) * maxYVelocity);
             }
 
             myAnimator.SetBool("isOnGround", false);
-            myAnimator.SetFloat("Yvelocity", playerVerticalSpeed);
-            
-            
-            
-            // if (isWet)
-            // {
-            //    myRb2d.gravityScale = waterGravity;
-            //     return;
-            // }
+            myAnimator.SetFloat("Yvelocity", playerVerticalDirection);
 
-            if (playerVerticalSpeed > 0)
+            if (!pressingJump) 
             {
-                myRb2d.gravityScale = playerGravity ;
-            }
-            else if (playerVerticalSpeed < 0 )
-            {
-                myRb2d.gravityScale = playerGravity * fallMultiplier;
-            }
+                playerGravity = regularGravity * fallMultiplier;
+            } 
+            else {
 
+                if (playerVerticalDirection > 0)
+                {
+
+                    playerGravity = regularGravity;
+
+                }
+                else if (playerVerticalDirection < 0)
+                {
+
+                    playerGravity = regularGravity * fallMultiplier;
+                }
+            }
         }
-        
     }
 }
+
